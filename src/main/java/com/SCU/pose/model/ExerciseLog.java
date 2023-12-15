@@ -1,20 +1,36 @@
-package SuperPose;
-import java.sql.Timestamp;
+package com.SCU.pose.model;
+
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import javax.persistence.*;
+import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.util.*;
+
+@Entity
+@Table(name = "exercise_logs")
 public class ExerciseLog {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int logId;
+
+    @Column(nullable = false)
     private int userId;
+
     private String exerciseType; // 'push-ups', 'plank'
     private int count; // 用于次数型运动
     private int duration; // 用于时间型运动，单位为秒
-    private Timestamp logDate;
+
+    private LocalDate logDate;
 
     // 构造函数
     public ExerciseLog() {
         // 默认构造函数
     }
-
-    public ExerciseLog(int logId, int userId, String exerciseType, int count, int duration, Timestamp logDate) {
-        this.logId = logId;
+    public ExerciseLog(int userId, String exerciseType, int count, int duration, LocalDate logDate) {
         this.userId = userId;
         this.exerciseType = exerciseType;
         this.count = count;
@@ -63,11 +79,11 @@ public class ExerciseLog {
         this.duration = duration;
     }
 
-    public Timestamp getLogDate() {
+    public LocalDate getLogDate() {
         return logDate;
     }
 
-    public void setLogDate(Timestamp logDate) {
+    public void setLogDate(LocalDate logDate) {
         this.logDate = logDate;
     }
 }
