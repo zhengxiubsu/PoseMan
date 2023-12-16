@@ -36,11 +36,4 @@ public class UserService {
         return userRepository.save(user); // save 方法用于创建和更新
     }
 
-    // 可能的额外方法
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
-
-    // 其他业务逻辑方法
 }
