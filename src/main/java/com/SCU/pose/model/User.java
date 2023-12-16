@@ -1,14 +1,7 @@
 package com.SCU.pose.model;
 
-
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 import javax.persistence.*;
-import javax.transaction.Transactional;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -23,10 +16,12 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Video> videos; // List of videos associated with the user
 
-    // 构造函数
+    // Constructors
     public User() {
-        // 默认构造函数
+        // Default constructor
     }
 
     public User(String username, String password) {
@@ -34,8 +29,7 @@ public class User {
         this.password = password;
     }
 
-
-    // Getter和Setter方法
+    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -56,11 +50,16 @@ public class User {
         return password;
     }
 
-    //commel
-
     public void setPassword(String password) {
         this.password = password;
     }
 
+    public List<Video> getVideos() {
+        return videos;
+    }
 
+    public void setVideos(List<Video> videos) {
+        this.videos = videos;
+    }
 }
+
