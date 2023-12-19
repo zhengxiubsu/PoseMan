@@ -18,6 +18,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    //get user by userName
 
     public Optional<User> getUserById(Integer id) {
         return userRepository.findById(id);
@@ -33,7 +34,7 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        return userRepository.save(user); // save 方法用于创建和更新
+        return userRepository.save(user);
     }
 
 }

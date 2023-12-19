@@ -13,10 +13,27 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    //create user endpoint
     @PostMapping("/user")
     public User createUser(@RequestBody User user){
         return userService.createUser(user);
     }
+
+    //get user exercise date
+
+    //update user exercise date
+
+
+    //verify user password
+
+
+    //get plank analytics
+
+
+    //get push_up analytics
+
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Integer id) {
@@ -25,21 +42,4 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User user) {
-        user.setId(id);
-        User updatedUser = userService.updateUser(user);
-        return ResponseEntity.ok(updatedUser);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
-        userService.deleteUser(id);
-        return ResponseEntity.ok().build();
-    }
 }

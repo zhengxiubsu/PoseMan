@@ -14,14 +14,16 @@ public class VideoController {
 
     @PostMapping("/process")
     public String processVideo(@RequestParam("file") MultipartFile file,
-                               @RequestParam("userId") int userId) {
+                               @RequestParam("userId") int userId, @RequestParam("label") String label) {
+
         try {
             byte[] videoBytes = file.getBytes();
-            return videoService.processVideo(videoBytes, userId);
+            return videoService.processVideo(videoBytes, userId, label);
         } catch (IOException e) {
             // Handle the exception
             return "Error processing video: " + e.getMessage();
         }
+
     }
 }
 

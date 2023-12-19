@@ -8,15 +8,18 @@ import com.SCU.pose.repository.UserRepository;
 import com.SCU.pose.repository.VideoRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 
-
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +28,7 @@ import java.util.Map;
 public class VideoService {
 
     @Autowired
-    private VideoAnalysisService videoAnalysisService;
+    private PushUp_Service pushUp_service;
 
     @Autowired
     private UserRepository userRepository;
@@ -34,7 +37,8 @@ public class VideoService {
     private VideoRepository videoRepository;
 
     // Method to process video
-    public String processVideo(byte[] videoBytes, int userId) {
+    public String processVideo(byte[] videoBytes, int userId, String label) {
+
         // Find user by userId
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
@@ -55,26 +59,59 @@ public class VideoService {
             Image image = new Image();
             List<Coordinate> coordinates = getCoordinatesFromFrame(frame);
             image.setCoordinates(coordinates);
-            // Save or process the image object as needed
+            video.getImages().add(image);
         }
 
-        int pushupCount = videoAnalysisService.countPushups(video);
+        if(label.equals("push_up")){
+
+            pushUp_service.analyzePushups(video);
+
+        }else if(label.equals("push_up")){
+
+        }
+
+
+        //int pushupCount = videoAnalysisService.countPushups(video);
 
         // Add the count to the analysis attribute of the video
-        String analysis = "Pushup count: " + pushupCount;
-        video.setAnalysis(analysis);
+        // String analysis = "Pushup count: " + pushupCount;
 
         // Save the updated video object to the database
         videoRepository.save(video);
 
-        return video.getAnalysis();
+        return "";
 
     }
 
     private List<byte[]> extractKeyFrames(byte[] videoBytes) {
-        // Implement the logic to extract every 3rd frame from the video
-        // This is a placeholder implementation
-        return new ArrayList<>();
+        List<byte[]> keyFrames = new ArrayList<>();
+        Java2DFrameConverter converter = new Java2DFrameConverter();
+
+        try (FFmpegFrameGrabber frameGrabber = new FFmpegFrameGrabber(new ByteArrayInputStream(videoBytes))) {
+            frameGrabber.start();
+
+            int frameCount = 0;
+            while (frameGrabber.getFrameNumber() < frameGrabber.getLengthInFrames()) {
+                org.bytedeco.javacv.Frame frame = frameGrabber.grabImage();
+                if (frame == null) {
+                    continue;
+                }
+
+                // Extract a key frame every 3 frames
+                if (frameCount % 3 == 0) {
+                    BufferedImage bufferedImage = converter.convert(frame);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ImageIO.write(bufferedImage, "jpg", baos);
+                    keyFrames.add(baos.toByteArray());
+                }
+
+                frameCount++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return keyFrames;
     }
 
     private List<Coordinate> getCoordinatesFromFrame(byte[] frame) {
