@@ -15,20 +15,19 @@ public class Video {
     @JoinColumn(name = "user_id") // Foreign key in Video table
     private User user; // Reference back to the User entity
 
+    private String label;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "video_id") // Foreign key in Image table
     private List<Image> images;
-
-    @Column(length = 5000) // Assuming analysis can be a long text
-    private String analysis;
 
     // Constructors
     public Video() {
     }
 
-    public Video(List<Image> images, String analysis) {
+    public Video(List<Image> images, String label) {
         this.images = images;
-        this.analysis = analysis;
+        this.label = label;
     }
 
     // Getters and setters
@@ -46,14 +45,6 @@ public class Video {
 
     public void setImages(List<Image> images) {
         this.images = images;
-    }
-
-    public String getAnalysis() {
-        return analysis;
-    }
-
-    public void setAnalysis(String analysis) {
-        this.analysis = analysis;
     }
 
     public User getUser() {
